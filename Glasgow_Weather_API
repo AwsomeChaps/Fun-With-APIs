@@ -1,0 +1,51 @@
+import http.client
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import csv
+import requests
+response = requests.get("https://api.kanye.rest")
+
+%matplotlib inline
+
+conn = http.client.HTTPSConnection("visual-crossing-weather.p.rapidapi.com")
+
+headers = {
+    'x-rapidapi-host': "visual-crossing-weather.p.rapidapi.com",
+    'x-rapidapi-key': "77602eeb35msh40b1e0751ece74dp1148a8jsnf0ae3566ce1d"
+    }
+
+conn.request("GET", "/history?startDateTime=2020-01-01T00%3A00%3A00&aggregateHours=24&location=Glasgow%2Cuk&endDateTime=2020-01-029T00%3A00%3A00&unitGroup=uk&dayStartTime=8%3A00%3A00&contentType=csv&dayEndTime=17%3A00%3A00&shortColumnNames=0", headers=headers)
+
+res = conn.getresponse()
+data = res.read()
+
+CSVText = csv.reader(data.decode("utf-8"), delimiter=' ')
+dat = data.decode("utf-8")
+spl = dat.split("\n")
+i = 0
+d = {}
+for x in spl[0].split(","):
+    d[x] = i
+    i = i + 1
+    
+ploop = []
+for y in spl[1:]:
+    ploop.insert(-1,y.split(","))
+    
+
+x = []
+y = []
+ploop = ploop[:-1]
+ploop = ploop[:-1]
+for u in ploop:
+    x.append(int(u[d["Date time"]+1][4:6]))
+    y.append(float(u[d["Temperature"]+1]))
+    
+    
+plt.plot(x,y, color = "r")
+plt.ylabel('Temp(C)', color ="r")
+plt.xlabel("Date", color ="r")
+plt.title(response.json()["quote"], color ="r")
+
+plt.show()
